@@ -6,13 +6,10 @@ import { sendResponse } from '../utils/response.js';
 
 const router = express.Router();
 
-// Apply verifyToken middleware to all routes in this controller
+// kiem tra token cho tat ca cac api trong file nay
 router.use(verifyToken);
 
-/**
- * GET /api/v1/projects
- * List all projects the current user is owner or member of.
- */
+// api lay tat ca cac du an lien quan den user
 router.get('/', async (req, res, next) => {
   try {
     const projects = await ProjectModel.findByUserId(req.user.id);
@@ -22,13 +19,11 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-/**
- * POST /api/v1/projects
- * Create a new project.
- */
+// api tao du an moi
 router.post('/', async (req, res, next) => {
   try {
     const { name, description, start_date, end_date } = req.body;
+    // kiem tra ten du an
     if (!name) {
       return sendResponse(res, 400, false, "Tên dự án không được để trống");
     }
@@ -47,10 +42,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-/**
- * GET /api/v1/projects/:id
- * Get detailed project information (only if owner or member).
- */
+// api lay chi tiet du an theo id
 router.get('/:id', async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
@@ -60,6 +52,7 @@ router.get('/:id', async (req, res, next) => {
       return sendResponse(res, 404, false, "Không tìm thấy dự án");
     }
 
+    // kiem tra xem co quyen xem khong
     const isOwner = project.owner_id === req.user.id;
     const isMember = project.members.some(member => member.user_id === req.user.id);
 
@@ -73,10 +66,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-/**
- * PUT /api/v1/projects/:id
- * Update project details (Project Owner only).
- */
+// api cap nhat thong tin du an (chi danh cho owner)
 router.put('/:id', isProjectOwner, async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
@@ -87,10 +77,7 @@ router.put('/:id', isProjectOwner, async (req, res, next) => {
   }
 });
 
-/**
- * DELETE /api/v1/projects/:id
- * Delete a project and cascade tasks (Project Owner only).
- */
+// api xoa du an (chi danh cho owner)
 router.delete('/:id', isProjectOwner, async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
@@ -101,15 +88,13 @@ router.delete('/:id', isProjectOwner, async (req, res, next) => {
   }
 });
 
-/**
- * POST /api/v1/projects/:id/members
- * Add a member to a project via email or userId (Project Owner only).
- */
+// api them thanh vien vao du an (chi danh cho owner)
 router.post('/:id/members', isProjectOwner, async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
     const { email, userId } = req.body;
 
+    // tim kiem user can them
     let targetUser = null;
     if (email) {
       targetUser = await UserModel.findByEmail(email);
@@ -123,12 +108,12 @@ router.post('/:id/members', isProjectOwner, async (req, res, next) => {
 
     const project = await ProjectModel.findById(projectId);
 
-    // Cannot add owner as member
+    // chu so huu khong can tu them minh vao
     if (project.owner_id === targetUser.id) {
       return sendResponse(res, 400, false, "Người dùng này là chủ sở hữu dự án, không cần thêm");
     }
 
-    // Check if already a member
+    // kiem tra xem da la member chua
     const exists = await ProjectModel.isMember(projectId, targetUser.id);
     if (exists) {
       return sendResponse(res, 400, false, "Người dùng này đã là thành viên của dự án");
@@ -141,15 +126,13 @@ router.post('/:id/members', isProjectOwner, async (req, res, next) => {
   }
 });
 
-/**
- * DELETE /api/v1/projects/:id/members/:userId
- * Remove a member from a project (Project Owner only).
- */
+// api xoa thanh vien khoi du an (chi danh cho owner)
 router.delete('/:id/members/:userId', isProjectOwner, async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
     const targetUserId = parseInt(req.params.userId);
 
+    // kiem tra xem co dung la member khong
     const exists = await ProjectModel.isMember(projectId, targetUserId);
     if (!exists) {
       return sendResponse(res, 400, false, "Người dùng không phải là thành viên của dự án này");
@@ -163,3 +146,4 @@ router.delete('/:id/members/:userId', isProjectOwner, async (req, res, next) => 
 });
 
 export default router;
+

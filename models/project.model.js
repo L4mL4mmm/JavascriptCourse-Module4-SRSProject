@@ -1,11 +1,7 @@
 import prisma from '../db.js';
 
 export const ProjectModel = {
-  /**
-   * Create a new project.
-   * @param {object} data - { name, description, start_date, end_date, owner_id }
-   * @returns {Promise<object>}
-   */
+  // tao moi mot du an
   create: async (data) => {
     return await prisma.project.create({
       data: {
@@ -18,11 +14,7 @@ export const ProjectModel = {
     });
   },
 
-  /**
-   * Get all projects where the user is the owner or a member.
-   * @param {number} userId 
-   * @returns {Promise<array>}
-   */
+  // tim cac du an ma user la owner hoac la member
   findByUserId: async (userId) => {
     const id = parseInt(userId);
     return await prisma.project.findMany({
@@ -47,11 +39,7 @@ export const ProjectModel = {
     });
   },
 
-  /**
-   * Get project details by ID.
-   * @param {number} id 
-   * @returns {Promise<object|null>}
-   */
+  // tim chi tiet du an bang id kem thong tin thanh vien va task
   findById: async (id) => {
     return await prisma.project.findUnique({
       where: { id: parseInt(id) },
@@ -71,12 +59,7 @@ export const ProjectModel = {
     });
   },
 
-  /**
-   * Update project details.
-   * @param {number} id 
-   * @param {object} data - { name, description, start_date, end_date }
-   * @returns {Promise<object>}
-   */
+  // cap nhat thong tin du an
   update: async (id, data) => {
     const updateData = {};
     if (data.name !== undefined) updateData.name = data.name;
@@ -90,23 +73,14 @@ export const ProjectModel = {
     });
   },
 
-  /**
-   * Delete a project (cascades task deletion via DB definition).
-   * @param {number} id 
-   * @returns {Promise<object>}
-   */
+  // xoa du an theo id
   delete: async (id) => {
     return await prisma.project.delete({
       where: { id: parseInt(id) }
     });
   },
 
-  /**
-   * Add a member to a project.
-   * @param {number} projectId 
-   * @param {number} userId 
-   * @returns {Promise<object>}
-   */
+  // them thanh vien moi vao du an
   addMember: async (projectId, userId) => {
     return await prisma.projectMember.create({
       data: {
@@ -121,12 +95,7 @@ export const ProjectModel = {
     });
   },
 
-  /**
-   * Remove a member from a project.
-   * @param {number} projectId 
-   * @param {number} userId 
-   * @returns {Promise<object>}
-   */
+  // xoa thanh vien khoi du an
   removeMember: async (projectId, userId) => {
     return await prisma.projectMember.delete({
       where: {
@@ -138,12 +107,7 @@ export const ProjectModel = {
     });
   },
 
-  /**
-   * Check if a user is already a member of a project.
-   * @param {number} projectId 
-   * @param {number} userId 
-   * @returns {Promise<boolean>}
-   */
+  // kiem tra user co phai thanh vien du an khong
   isMember: async (projectId, userId) => {
     const member = await prisma.projectMember.findUnique({
       where: {
@@ -156,3 +120,4 @@ export const ProjectModel = {
     return !!member;
   }
 };
+

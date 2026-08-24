@@ -1,11 +1,7 @@
 import prisma from '../db.js';
 
 export const TaskModel = {
-  /**
-   * Create a new task.
-   * @param {object} data - { project_id, assignee_id, title, description, status, priority, due_date }
-   * @returns {Promise<object>}
-   */
+  // tao cong viec moi
   create: async (data) => {
     return await prisma.task.create({
       data: {
@@ -17,7 +13,7 @@ export const TaskModel = {
         project: {
           connect: { id: parseInt(data.project_id) }
         },
-        // Connect assignee if provided
+        // lien ket voi nguoi duoc giao neu co
         ...(data.assignee_id ? {
           assignee: {
             connect: { id: parseInt(data.assignee_id) }
@@ -27,11 +23,7 @@ export const TaskModel = {
     });
   },
 
-  /**
-   * Find a task by its ID.
-   * @param {number} id 
-   * @returns {Promise<object|null>}
-   */
+  // tim kiem cong viec bang id
   findById: async (id) => {
     return await prisma.task.findUnique({
       where: { id: parseInt(id) },
@@ -44,12 +36,7 @@ export const TaskModel = {
     });
   },
 
-  /**
-   * Update a task.
-   * @param {number} id 
-   * @param {object} data - { title, description, status, priority, due_date, assignee_id }
-   * @returns {Promise<object>}
-   */
+  // cap nhat thong tin cong viec
   update: async (id, data) => {
     const updateData = {};
     if (data.title !== undefined) updateData.title = data.title;
@@ -58,6 +45,7 @@ export const TaskModel = {
     if (data.priority !== undefined) updateData.priority = data.priority;
     if (data.due_date !== undefined) updateData.due_date = data.due_date ? new Date(data.due_date) : null;
     
+    // cap nhat hoac huy nguoi duoc giao viec
     if (data.assignee_id !== undefined) {
       if (data.assignee_id === null) {
         updateData.assignee = { disconnect: true };
@@ -72,23 +60,14 @@ export const TaskModel = {
     });
   },
 
-  /**
-   * Delete a task.
-   * @param {number} id 
-   * @returns {Promise<object>}
-   */
+  // xoa cong viec
   delete: async (id) => {
     return await prisma.task.delete({
       where: { id: parseInt(id) }
     });
   },
 
-  /**
-   * Update task status.
-   * @param {number} id 
-   * @param {string} status - 'todo' | 'doing' | 'done'
-   * @returns {Promise<object>}
-   */
+  // cap nhat nhanh trang thai cong viec
   updateStatus: async (id, status) => {
     return await prisma.task.update({
       where: { id: parseInt(id) },
@@ -96,19 +75,16 @@ export const TaskModel = {
     });
   },
 
-  /**
-   * List tasks for a project with filters, sorting, searching, and pagination.
-   * @param {number} projectId 
-   * @param {object} filters - { page, limit, status, priority, assigneeId, search, sortBy, sortOrder }
-   * @returns {Promise<object>}
-   */
+  // tim kiem cong viec co bo loc va phan trang
   findTasks: async (projectId, filters = {}) => {
+    // tinh toan tham so phan trang skip va take
     const page = parseInt(filters.page) || 1;
     const limit = parseInt(filters.limit) || 10;
     const skip = (page - 1) * limit;
 
     const where = { project_id: parseInt(projectId) };
 
+    // ap dung cac dieu kien loc neu co
     if (filters.status) {
       where.status = filters.status;
     }
@@ -127,6 +103,7 @@ export const TaskModel = {
     const sortBy = filters.sortBy || 'created_at';
     const sortOrder = filters.sortOrder || 'desc';
 
+    // chay song song lay danh sach va dem tong so item
     const [tasks, totalItems] = await Promise.all([
       prisma.task.findMany({
         where,
@@ -154,3 +131,4 @@ export const TaskModel = {
     };
   }
 };
+

@@ -1,36 +1,25 @@
 import prisma from '../db.js';
 
 export const UserModel = {
-  /**
-   * Find a user by email.
-   * @param {string} email 
-   * @returns {Promise<object|null>}
-   */
+  // tim kiem nguoi dung bang email
   findByEmail: async (email) => {
     return await prisma.user.findUnique({
       where: { email }
     });
   },
 
-  /**
-   * Find a user by ID.
-   * @param {number} id 
-   * @returns {Promise<object|null>}
-   */
+  // tim kiem nguoi dung bang id
   findById: async (id) => {
     return await prisma.user.findUnique({
       where: { id: parseInt(id) }
     });
   },
 
-  /**
-   * Create a new user.
-   * @param {object} data - { name, email, password }
-   * @returns {Promise<object>}
-   */
+  // tao moi tai khoan nguoi dung
   create: async (data) => {
     return await prisma.user.create({
       data
     });
   }
 };
+

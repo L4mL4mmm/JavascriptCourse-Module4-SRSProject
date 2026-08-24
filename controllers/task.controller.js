@@ -6,23 +6,21 @@ import { sendResponse } from '../utils/response.js';
 
 const router = express.Router();
 
-// Apply verifyToken to all task routes
+// kiem tra token dang nhap cho toan bo api task
 router.use(verifyToken);
 
-/**
- * POST /api/v1/projects/:id/tasks
- * Create a new task within a project (Project Owner only).
- */
+// api tao cong viec moi (chi chu du an duoc lam)
 router.post('/projects/:id/tasks', isProjectOwner, async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
     const { title, description, assignee_id, status, priority, due_date } = req.body;
 
+    // kiem tra tieu de bat buoc
     if (!title) {
       return sendResponse(res, 400, false, "Tiêu đề công việc không được để trống");
     }
 
-    // Verify assignee is a member of the project if assigned
+    // kiem tra nguoi duoc giao co phai thanh vien du an khong
     if (assignee_id) {
       const isMember = await ProjectModel.isMember(projectId, assignee_id);
       const project = await ProjectModel.findById(projectId);
@@ -49,10 +47,7 @@ router.post('/projects/:id/tasks', isProjectOwner, async (req, res, next) => {
   }
 });
 
-/**
- * GET /api/v1/projects/:id/tasks
- * List tasks of a project with filters and pagination (Project Owner or member).
- */
+// api lay danh sach cong viec (cho ca owner va member)
 router.get('/projects/:id/tasks', async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
@@ -62,7 +57,7 @@ router.get('/projects/:id/tasks', async (req, res, next) => {
       return sendResponse(res, 404, false, "Không tìm thấy dự án");
     }
 
-    // Access check
+    // kiem tra quyen xem
     const isOwner = project.owner_id === req.user.id;
     const isMember = project.members.some(member => member.user_id === req.user.id);
 
@@ -89,15 +84,12 @@ router.get('/projects/:id/tasks', async (req, res, next) => {
   }
 });
 
-/**
- * PUT /api/v1/tasks/:id
- * Update task details (Project Owner only).
- */
+// api cap nhat thong tin cong viec (chi chu du an)
 router.put('/tasks/:id', isProjectOwner, async (req, res, next) => {
   try {
     const taskId = parseInt(req.params.id);
     
-    // Check if assignee is member of project
+    // kiem tra nguoi duoc giao moi co phai thanh vien khong
     if (req.body.assignee_id) {
       const task = await TaskModel.findById(taskId);
       const isMember = await ProjectModel.isMember(task.project_id, req.body.assignee_id);
@@ -116,10 +108,7 @@ router.put('/tasks/:id', isProjectOwner, async (req, res, next) => {
   }
 });
 
-/**
- * DELETE /api/v1/tasks/:id
- * Delete a task (Project Owner only).
- */
+// api xoa cong viec (chi chu du an)
 router.delete('/tasks/:id', isProjectOwner, async (req, res, next) => {
   try {
     const taskId = parseInt(req.params.id);
@@ -130,15 +119,13 @@ router.delete('/tasks/:id', isProjectOwner, async (req, res, next) => {
   }
 });
 
-/**
- * PATCH /api/v1/tasks/:id/status
- * Quickly update task status (Project Owner or member).
- */
+// api cap nhat nhanh trang thai (cho ca owner va member)
 router.patch('/tasks/:id/status', async (req, res, next) => {
   try {
     const taskId = parseInt(req.params.id);
     const { status } = req.body;
 
+    // kiem tra trang thai hop le
     if (!status || !['todo', 'doing', 'done'].includes(status)) {
       return sendResponse(res, 400, false, "Trạng thái công việc không hợp lệ (todo, doing, done)");
     }
@@ -148,7 +135,7 @@ router.patch('/tasks/:id/status', async (req, res, next) => {
       return sendResponse(res, 404, false, "Không tìm thấy công việc");
     }
 
-    // Access check
+    // kiem tra quyen cap nhat cua nguoi dung
     const isOwner = task.project.owner_id === req.user.id;
     const isMember = await ProjectModel.isMember(task.project_id, req.user.id);
 
@@ -164,3 +151,4 @@ router.patch('/tasks/:id/status', async (req, res, next) => {
 });
 
 export default router;
+

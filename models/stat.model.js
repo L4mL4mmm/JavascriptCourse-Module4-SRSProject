@@ -1,20 +1,16 @@
 import prisma from '../db.js';
 
 export const StatModel = {
-  /**
-   * Get task statistics for a specific project.
-   * @param {number} projectId 
-   * @returns {Promise<object>}
-   */
+  // lay thong ke cong viec cua mot du an
   getProjectStats: async (projectId) => {
     const projectIdInt = parseInt(projectId);
 
-    // 1. Total number of tasks in the project
+    // 1. dem tong so cong viec cua du an
     const totalTasks = await prisma.task.count({
       where: { project_id: projectIdInt }
     });
 
-    // 2. Tasks grouped by status (todo, doing, done)
+    // 2. nhom va dem so cong viec theo tung trang thai
     const statusGroups = await prisma.task.groupBy({
       by: ['status'],
       where: { project_id: projectIdInt },
@@ -30,7 +26,7 @@ export const StatModel = {
       statusBreakdown[group.status] = group._count.id;
     });
 
-    // 3. Number of overdue tasks (due_date < now and status != done)
+    // 3. dem so luong cong viec bi qua han
     const overdueTasks = await prisma.task.count({
       where: {
         project_id: projectIdInt,
@@ -46,20 +42,16 @@ export const StatModel = {
     };
   },
 
-  /**
-   * Get task statistics for the current user.
-   * @param {number} userId 
-   * @returns {Promise<object>}
-   */
+  // lay thong ke cong viec cua ca nhan nguoi dung
   getUserStats: async (userId) => {
     const userIdInt = parseInt(userId);
 
-    // 1. Total tasks assigned to the user
+    // 1. tong so cong viec duoc giao
     const totalAssigned = await prisma.task.count({
       where: { assignee_id: userIdInt }
     });
 
-    // 2. Total completed tasks assigned to the user
+    // 2. tong so cong viec duoc giao da hoan thanh
     const completedAssigned = await prisma.task.count({
       where: {
         assignee_id: userIdInt,
@@ -73,3 +65,4 @@ export const StatModel = {
     };
   }
 };
+

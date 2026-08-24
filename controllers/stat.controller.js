@@ -6,13 +6,10 @@ import { sendResponse } from '../utils/response.js';
 
 const router = express.Router();
 
-// Apply verifyToken to all routes in this controller
+// kiem tra token cho tat ca cac api trong file nay
 router.use(verifyToken);
 
-/**
- * GET /api/v1/projects/:id/statistics
- * Get project statistics (accessible by Project Owner and members).
- */
+// api lay thong ke cua du an
 router.get('/projects/:id/statistics', async (req, res, next) => {
   try {
     const projectId = parseInt(req.params.id);
@@ -22,7 +19,7 @@ router.get('/projects/:id/statistics', async (req, res, next) => {
       return sendResponse(res, 404, false, "Không tìm thấy dự án");
     }
 
-    // Verify access
+    // kiem tra quyen xem thong ke du an
     const isOwner = project.owner_id === req.user.id;
     const isMember = project.members.some(member => member.user_id === req.user.id);
 
@@ -37,10 +34,7 @@ router.get('/projects/:id/statistics', async (req, res, next) => {
   }
 });
 
-/**
- * GET /api/v1/users/me/statistics
- * Get personal task assignment statistics.
- */
+// api lay thong ke cong viec cua ca nhan hien tai
 router.get('/users/me/statistics', async (req, res, next) => {
   try {
     const stats = await StatModel.getUserStats(req.user.id);
@@ -51,3 +45,4 @@ router.get('/users/me/statistics', async (req, res, next) => {
 });
 
 export default router;
+
