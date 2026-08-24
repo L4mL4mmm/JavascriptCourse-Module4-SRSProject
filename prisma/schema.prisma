@@ -1,10 +1,84 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated"
+  provider        = "prisma-client-js"
+  output          = "../generated"
 }
 
 datasource db {
   provider = "mysql"
+}
+enum TaskStatus {
+  todo
+  doing
+  done
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+model User {
+  id               Int             @id @default(autoincrement())
+  name             String          @db.VarChar(255)
+  email            String          @unique @db.VarChar(255)
+  password         String          @db.VarChar(255)
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+
+  owned_projects   Project[]       @relation("ProjectOwner")
+  member_projects  ProjectMember[]
+  assigned_tasks   Task[]          @relation("TaskAssignee")
+
+  @@map("users")
+}
+
+model Project {
+  id          Int             @id @default(autoincrement())
+  name        String          @db.VarChar(255)
+  description String?         @db.Text
+  start_date  DateTime?       @db.Date
+  end_date    DateTime?       @db.Date
+  owner_id    Int
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+
+  owner       User            @relation("ProjectOwner", fields: [owner_id], references: [id], onDelete: Cascade)
+  members     ProjectMember[]
+  tasks       Task[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id         Int      @id @default(autoincrement())
+  project_id Int
+  user_id    Int
+  created_at DateTime @default(now())
+
+  project    Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, user_id])
+  @@map("project_members")
+}
+
+model Task {
+  id          Int          @id @default(autoincrement())
+  project_id  Int
+  assignee_id Int?
+  title       String       @db.VarChar(255)
+  description String?      @db.Text
+  status      TaskStatus   @default(todo)
+  priority    TaskPriority @default(medium)
+  due_date    DateTime?    @db.Date
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  project     Project      @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  assignee    User?        @relation("TaskAssignee", fields: [assignee_id], references: [id], onDelete: SetNull)
+
+  @@map("tasks")
 }
 
 model Category {
@@ -20,4 +94,4 @@ model Product {
   price       Float
   category_id Int
   category    Category @relation(fields: [category_id], references: [id])
-}
+}

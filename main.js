@@ -1,17 +1,20 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
-import mysql from 'mysql2';
-import prisma from './db.js'
 import bodyParser from 'body-parser';
-import api from './api.js'
+import api from './api.js';
+import { errorHandler } from './middlewares/error.middleware.js';
 
-const app = express()
-const port = 3000
+const app = express();
+const port = process.env.PORT || 3000;
 
+app.use(bodyParser.json());
 
-app.use(bodyParser.json())
+app.use("/api", api);
 
-app.use("/api", api)
+app.use(errorHandler);
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+    console.log(`Example app listening on port ${port}`);
+});

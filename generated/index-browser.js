@@ -120,6 +120,46 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  owner_id: 'owner_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ProjectMemberScalarFieldEnum = {
+  id: 'id',
+  project_id: 'project_id',
+  user_id: 'user_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.TaskScalarFieldEnum = {
+  id: 'id',
+  project_id: 'project_id',
+  assignee_id: 'assignee_id',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  priority: 'priority',
+  due_date: 'due_date',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -138,6 +178,27 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.UserOrderByRelevanceFieldEnum = {
+  name: 'name',
+  email: 'email',
+  password: 'password'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description'
+};
+
+exports.Prisma.TaskOrderByRelevanceFieldEnum = {
+  title: 'title',
+  description: 'description'
+};
+
 exports.Prisma.CategoryOrderByRelevanceFieldEnum = {
   title: 'title'
 };
@@ -145,9 +206,23 @@ exports.Prisma.CategoryOrderByRelevanceFieldEnum = {
 exports.Prisma.ProductOrderByRelevanceFieldEnum = {
   name: 'name'
 };
+exports.TaskStatus = exports.$Enums.TaskStatus = {
+  todo: 'todo',
+  doing: 'doing',
+  done: 'done'
+};
 
+exports.TaskPriority = exports.$Enums.TaskPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high'
+};
 
 exports.Prisma.ModelName = {
+  User: 'User',
+  Project: 'Project',
+  ProjectMember: 'ProjectMember',
+  Task: 'Task',
   Category: 'Category',
   Product: 'Product'
 };
