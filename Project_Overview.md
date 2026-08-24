@@ -2,6 +2,10 @@
 
 Tài liệu này giải thích chi tiết mục đích, cách hoạt động và công dụng của từng khối code trong mọi file thuộc dự án **Task Management Web App** (MySQL + Prisma 7 + Express.js).
 
+> [!NOTE]
+> **Về các Model Category & Product:**
+> Hai model này được giữ nguyên từ khung dự án ban đầu của bạn nhằm đảm bảo tính tương thích ngược (không làm lỗi các code cũ của bạn). Chúng hoạt động hoàn toàn độc lập và không gây ảnh hưởng gì tới luồng nghiệp vụ Quản lý công việc nhóm (Task Management) được đặc tả trong tài liệu SRS.
+
 ---
 
 ## 1. CẤU TRÚC THƯ MỤC & FILE KHỞI TẠO CHUNG
